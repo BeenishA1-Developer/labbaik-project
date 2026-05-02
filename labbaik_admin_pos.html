@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Royal Admin POS | 100% Mobile Ready</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@600;700&family=Outfit:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --red: #C8102E;
+            --bg: #FDF6EC;
+            --text: #1C1008;
+            --white: #FFFFFF;
+            --border: #EDE4D5;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+        body { font-family: 'Outfit', sans-serif; background: var(--bg); color: var(--text); height: 100vh; overflow: hidden; }
+
+        /* --- LAYOUT --- */
+        .wrapper { display: flex; height: 100vh; width: 100vw; flex-direction: column; }
+        @media (min-width: 1024px) { .wrapper { flex-direction: row; } }
+
+        /* Desktop Sidebar */
+        .sidebar { width: 80px; background: var(--text); display: flex; flex-direction: column; align-items: center; padding: 25px 0; gap: 30px; flex-shrink: 0; }
+        @media (max-width: 1023px) { .sidebar { display: none; } }
+        .side-btn { width: 45px; height: 45px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 22px; color: rgba(255,255,255,0.3); cursor: pointer; }
+        .side-btn.active { background: var(--red); color: white; }
+
+        /* Main Section */
+        .main { flex: 1; display: flex; flex-direction: column; overflow: hidden; background: var(--bg); }
+        
+        header { 
+            padding: 15px 20px; background: var(--white); border-bottom: 1px solid var(--border); 
+            display: flex; justify-content: space-between; align-items: center; flex-shrink: 0;
+        }
+        .logo-text { font-family: 'Cormorant Garamond', serif; font-size: 20px; font-weight: 700; color: var(--red); }
+        .status-pill { background: #ECFDF5; color: #059669; font-size: 9px; font-weight: 800; padding: 4px 10px; border-radius: 20px; border: 1px solid #D1FAE5; }
+
+        /* Inventory */
+        .content { flex: 1; overflow-y: auto; padding: 15px; padding-bottom: 90px; }
+        .cats { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 15px; scrollbar-width: none; }
+        .cats::-webkit-scrollbar { display: none; }
+        .cat-btn { padding: 10px 20px; border-radius: 50px; border: 1px solid var(--border); background: white; white-space: nowrap; font-weight: 700; font-size: 12px; cursor: pointer; transition: 0.2s; }
+        .cat-btn.active { background: var(--text); color: white; border-color: var(--text); }
+
+        .grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
+        @media (min-width: 600px) { .grid { grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); } }
+        
+        .tile { background: white; border-radius: 20px; padding: 15px; border: 1px solid var(--border); text-align: center; cursor: pointer; position: relative; transition: 0.1s; }
+        .tile:active { transform: scale(0.95); background: #f9f9f9; }
+        .tile-emoji { font-size: 40px; display: block; margin-bottom: 5px; }
+        .tile-name { font-size: 13px; font-weight: 700; display: block; margin-bottom: 2px; }
+        .tile-price { font-weight: 800; color: var(--red); font-size: 14px; }
+
+        /* Floating Summary (Mobile) */
+        .mob-bar { 
+            position: fixed; bottom: 0; left: 0; right: 0; 
+            background: var(--text); color: white;
+            padding: 15px 20px; display: flex; justify-content: space-between; 
+            align-items: center; z-index: 1000;
+        }
+        @media (min-width: 1024px) { .mob-bar { display: none; } }
+        .bar-total { font-size: 20px; font-weight: 800; }
+        .btn-view-bill { background: var(--red); color: white; border: none; padding: 12px 20px; border-radius: 12px; font-weight: 800; font-size: 13px; }
+
+        /* Desktop Billing Sidebar */
+        .desk-billing { width: 400px; background: white; border-left: 1px solid var(--border); display: flex; flex-direction: column; }
+        @media (max-width: 1023px) { .desk-billing { display: none; } }
+        .bill-head { padding: 25px; border-bottom: 1px solid var(--border); }
+        .bill-head h2 { font-family: 'Cormorant Garamond', serif; font-size: 26px; }
+        .bill-body { flex: 1; overflow-y: auto; padding: 20px; }
+        .bill-item { display: flex; align-items: center; gap: 12px; padding: 12px; background: var(--bg); border-radius: 15px; margin-bottom: 10px; }
+        .qty-box { display: flex; align-items: center; gap: 10px; background: white; border: 1px solid #eee; padding: 5px 12px; border-radius: 10px; }
+        .qty-btn { border:none; background:none; font-weight:800; font-size:18px; width:20px; cursor:pointer; }
+
+        .bill-foot { padding: 25px; border-top: 1px solid var(--border); background: #fafafa; }
+        .pay-btn { width: 100%; padding: 18px; border-radius: 15px; border: none; background: var(--red); color: white; font-weight: 800; font-size: 16px; cursor: pointer; box-shadow: 0 10px 20px rgba(200,16,46,0.2); }
+
+        /* Mobile Drawer */
+        .drawer { position: fixed; inset: 0; background: rgba(0,0,0,0.5); backdrop-filter: blur(4px); z-index: 2000; display: none; }
+        .drawer-box { position: absolute; bottom: 0; left: 0; right: 0; background: white; border-radius: 30px 30px 0 0; max-height: 85vh; display: flex; flex-direction: column; transform: translateY(100%); transition: 0.3s cubic-bezier(0.8, 0, 0.2, 1); }
+        .drawer.active { display: block; }
+        .drawer.active .drawer-box { transform: translateY(0); }
+
+        /* Receipt */
+        .overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.85); z-index: 3000; display: none; align-items: center; justify-content: center; padding: 20px; }
+        .receipt { background: white; width: 100%; max-width: 340px; padding: 30px; font-family: monospace; border-radius: 2px; }
+
+        #toast { position: fixed; bottom: 85px; left: 50%; transform: translateX(-50%) translateY(100px); background: var(--text); color: white; padding: 12px 25px; border-radius: 30px; font-size: 13px; font-weight: 700; z-index: 5000; transition: 0.3s; }
+        #toast.show { transform: translateX(-50%) translateY(0); }
+    </style>
+</head>
+<body>
+
+<div id="toast">✅ Added to Bill</div>
+
+<div class="wrapper">
+    <!-- Desktop Sidebar -->
+    <div class="sidebar">
+        <div class="side-btn active">📊</div>
+        <div class="side-btn">⚙️</div>
+    </div>
+
+    <!-- Main Content Area -->
+    <div class="main">
+        <header>
+            <div class="logo-text">Labbaik Royal <span>POS</span></div>
+            <div class="status-pill">● ONLINE</div>
+        </header>
+
+        <div class="content">
+            <div class="cats">
+                <button class="cat-btn active" id="btn-pizza" onclick="set('pizza')">🍕 Pizza</button>
+                <button class="cat-btn" id="btn-sweets" onclick="set('sweets')">🍯 Sweets</button>
+                <button class="cat-btn" id="btn-fast" onclick="set('fast')">🍔 Burgers</button>
+                <button class="cat-btn" id="btn-drinks" onclick="set('drinks')">🥤 Drinks</button>
+            </div>
+            <div class="grid" id="grid"></div>
+        </div>
+
+        <!-- Mobile Floating Bar -->
+        <div class="mob-bar">
+            <div>
+                <small style="display:block; font-size:9px; color:rgba(255,255,255,0.5);">TOTAL BILL</small>
+                <span class="bar-total" id="barTotal">Rs. 0</span>
+            </div>
+            <button class="btn-view-bill" onclick="toggleDrawer()">VIEW BILL (<span id="badge">0</span>)</button>
+        </div>
+    </div>
+
+    <!-- Desktop Billing Panel -->
+    <div class="desk-billing">
+        <div class="bill-head"><h2>Current Order</h2></div>
+        <div class="bill-body" id="deskItems"></div>
+        <div class="bill-foot">
+            <div style="display:flex; justify-content:space-between; font-size:24px; font-weight:800; margin-bottom:15px;"><span>Total</span><span id="deskTotal">Rs. 0</span></div>
+            <button class="pay-btn" onclick="checkout()">PRINT RECEIPT</button>
+        </div>
+    </div>
+</div>
+
+<!-- Mobile Drawer -->
+<div class="drawer" id="drawer">
+    <div class="drawer-box" onclick="event.stopPropagation()">
+        <div style="padding:20px; border-bottom:1px solid #eee; display:flex; justify-content:space-between; align-items:center;">
+            <h2 style="font-family:'Cormorant Garamond',serif;">Current Bill</h2>
+            <button onclick="toggleDrawer()" style="border:none; background:none; font-size:24px;">✕</button>
+        </div>
+        <div class="bill-body" id="mobItems"></div>
+        <div style="padding:20px; border-top:1px solid #eee; padding-bottom:40px;">
+            <div style="display:flex; justify-content:space-between; font-size:24px; font-weight:800; margin-bottom:15px;"><span>Total</span><span id="drawTotal">Rs. 0</span></div>
+            <button class="pay-btn" onclick="checkout()">FINISH & PRINT</button>
+        </div>
+    </div>
+</div>
+
+<!-- Receipt Overlay -->
+<div class="overlay" id="overlay">
+    <div class="receipt" id="receiptContent"></div>
+</div>
+
+<script>
+    const ITEMS = [
+        { id:1, cat:'pizza', name:'Tandoori Hot', price:1250, emoji:'🍕' },
+        { id:2, cat:'pizza', name:'Crown Crust', price:1650, emoji:'🥘' },
+        { id:3, cat:'sweets', name:'Mix Mithai (1kg)', price:950, emoji:'🍬' },
+        { id:4, cat:'sweets', name:'Khoya Barfi', price:1150, emoji:'🍯' },
+        { id:5, cat:'fast', name:'Zinger Burger', price:550, emoji:'🍔' },
+        { id:6, cat:'drinks', name:'Cold Drink', price:120, emoji:'🥤' }
+    ];
+    let cart = [];
+    let cur = 'pizza';
+
+    function set(c) {
+        cur = c;
+        document.querySelectorAll('.cat-btn').forEach(b => b.classList.remove('active'));
+        document.getElementById(`btn-${c}`).classList.add('active');
+        render();
+    }
+
+    function render() {
+        const g = document.getElementById('grid');
+        g.innerHTML = ITEMS.filter(i => i.cat === cur).map(i => `
+            <div class="tile" onclick="add(${i.id})">
+                <span class="tile-emoji">${i.emoji}</span>
+                <span class="tile-name">${i.name}</span>
+                <span class="tile-price">Rs. ${i.price}</span>
+            </div>
+        `).join('');
+    }
+
+    function add(id) {
+        const item = ITEMS.find(m => m.id === id);
+        const existing = cart.find(c => c.id === id);
+        if(existing) existing.qty++;
+        else cart.push({...item, qty: 1});
+        update();
+        showToast("✅ Added to bill");
+    }
+
+    function update() {
+        const dItems = document.getElementById('deskItems');
+        const mItems = document.getElementById('mobItems');
+        const badge = document.getElementById('badge');
+        const dTotal = document.getElementById('deskTotal');
+        const bTotal = document.getElementById('barTotal');
+        const drTotal = document.getElementById('drawTotal');
+
+        let sum = 0;
+        const html = cart.map(i => {
+            sum += i.price * i.qty;
+            return `<div class="bill-item">
+                <div style="font-size:24px;">${i.emoji}</div>
+                <div style="flex:1;"><div style="font-weight:700; font-size:13px;">${i.name}</div><div style="font-weight:700; color:var(--red);">Rs. ${i.price * i.qty}</div></div>
+                <div class="qty-box"><button class="qty-btn" onclick="qty(${i.id},-1)">−</button><span style="font-weight:800; width:15px; text-align:center;">${i.qty}</span><button class="qty-btn" onclick="qty(${i.id},1)">+</button></div>
+            </div>`;
+        }).join('');
+
+        dItems.innerHTML = mItems.innerHTML = html;
+        badge.textContent = cart.reduce((s,i) => s + i.qty, 0);
+        dTotal.textContent = bTotal.textContent = drTotal.textContent = `Rs. ${sum}`;
+    }
+
+    function qty(id, d) {
+        const i = cart.find(c => c.id === id);
+        i.qty += d;
+        if(i.qty <= 0) cart = cart.filter(c => c.id !== id);
+        update();
+    }
+
+    function toggleDrawer() { document.getElementById('drawer').classList.toggle('active'); }
+
+    function checkout() {
+        if(cart.length === 0) return;
+        const o = document.getElementById('overlay');
+        const c = document.getElementById('receiptContent');
+        const sum = cart.reduce((s,i) => s + i.price * i.qty, 0);
+        c.innerHTML = `
+            <div style="text-align:center; font-family:'Cormorant Garamond',serif; font-size:22px; font-weight:700;">LABBAIK ROYAL POS</div>
+            <div style="text-align:center; font-size:10px;">${new Date().toLocaleString()}</div>
+            <hr style="margin:10px 0; border:none; border-top:1px dashed #000;">
+            ${cart.map(i => `<div style="display:flex; justify-content:space-between; font-size:12px;"><span>${i.name} x${i.qty}</span><span>Rs.${i.price * i.qty}</span></div>`).join('')}
+            <hr style="margin:10px 0; border:none; border-top:1px dashed #000;">
+            <div style="display:flex; justify-content:space-between; font-weight:800; font-size:18px;"><span>TOTAL</span><span>Rs.${sum}</span></div>
+            <button onclick="location.reload()" style="width:100%; margin-top:20px; padding:12px; background:black; color:white; border:none; cursor:pointer;">DONE</button>
+        `;
+        o.style.display = 'flex';
+    }
+
+    function showToast(m) {
+        const t = document.getElementById('toast');
+        t.textContent = m;
+        t.classList.add('show');
+        setTimeout(() => t.classList.remove('show'), 2000);
+    }
+
+    render();
+</script>
+</body>
+</html>

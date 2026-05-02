@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Labbaik Sweets & Pizza | The Royal Experience</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@600;700&family=Outfit:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --red: #C8102E;
+            --red-dark: #9B0D23;
+            --gold: #D4A017;
+            --bg: #FDF6EC;
+            --white: #FFFFFF;
+            --text: #1C1008;
+            --muted: #9A8070;
+            --shadow: 0 10px 30px rgba(28,16,8,0.08);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+        body { font-family: 'Outfit', sans-serif; background: var(--bg); color: var(--text); overflow-x: hidden; scroll-behavior: smooth; }
+
+        /* --- TICKER --- */
+        .ticker { background: var(--red); color: white; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; padding: 8px 0; overflow: hidden; white-space: nowrap; position: sticky; top: 0; z-index: 1002; }
+        .ticker-inner { display: inline-block; animation: ticker 20s linear infinite; }
+        .ticker-inner span { padding: 0 30px; }
+        @keyframes ticker { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
+
+        /* --- NAV --- */
+        nav { position: sticky; top: 27px; z-index: 1001; background: rgba(253,246,236,0.95); backdrop-filter: blur(10px); padding: 15px 20px; border-bottom: 1px solid rgba(0,0,0,0.05); display: flex; justify-content: space-between; align-items: center; }
+        .logo { display: flex; flex-direction: column; line-height: 1; text-decoration: none; }
+        .logo-main { font-family: 'Cormorant Garamond', serif; font-size: 24px; font-weight: 700; color: var(--red); }
+        .logo-sub { font-size: 9px; font-weight: 800; color: var(--gold); letter-spacing: 2px; text-transform: uppercase; margin-top: 2px; }
+
+        /* --- HERO --- */
+        .hero { padding: 40px 20px; text-align: center; }
+        .hero h1 { font-family: 'Cormorant Garamond', serif; font-size: 48px; line-height: 1; margin-bottom: 12px; }
+        .hero h1 em { color: var(--red); font-style: italic; }
+        .hero p { font-size: 15px; color: var(--muted); max-width: 320px; margin: 0 auto; line-height: 1.6; }
+
+        /* --- CATEGORIES --- */
+        .tabs-wrap { position: sticky; top: 80px; z-index: 999; background: var(--bg); padding: 10px 0; border-bottom: 1px solid rgba(0,0,0,0.05); }
+        .tabs { display: flex; gap: 8px; overflow-x: auto; padding: 0 15px; scrollbar-width: none; }
+        .tabs::-webkit-scrollbar { display: none; }
+        .tab-btn { padding: 8px 18px; border-radius: 50px; border: 1.5px solid rgba(0,0,0,0.05); background: var(--white); white-space: nowrap; font-weight: 700; font-size: 13px; cursor: pointer; transition: 0.2s; }
+        .tab-btn.active { background: var(--text); color: white; border-color: var(--text); box-shadow: 0 5px 15px rgba(0,0,0,0.1); }
+
+        /* --- GRID --- */
+        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; padding: 20px 15px 100px; }
+        .card { background: var(--white); border-radius: 20px; border: 1.5px solid rgba(0,0,0,0.03); overflow: hidden; display: flex; flex-direction: column; transition: 0.3s; position: relative; }
+        .card:active { transform: scale(0.96); }
+        
+        .item-img { height: 120px; background: linear-gradient(135deg, #F5ECD8, #FDF6EC); display: flex; align-items: center; justify-content: center; font-size: 50px; position: relative; }
+        .badge { position: absolute; top: 10px; left: 10px; background: var(--red); color: white; font-size: 8px; font-weight: 800; padding: 3px 8px; border-radius: 5px; text-transform: uppercase; }
+        
+        .card-body { padding: 12px; flex: 1; display: flex; flex-direction: column; }
+        .card-title { font-size: 14px; font-weight: 700; margin-bottom: 4px; }
+        .card-price { font-family: 'Cormorant Garamond', serif; font-size: 18px; font-weight: 700; color: var(--red); margin-bottom: 12px; }
+        
+        .btn-add { width: 100%; padding: 10px; border-radius: 10px; border: none; background: var(--text); color: white; font-weight: 800; font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px; cursor: pointer; margin-top: auto; }
+
+        /* --- BOTTOM NAV --- */
+        .bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; background: var(--text); height: 70px; display: flex; justify-content: space-around; align-items: center; z-index: 1005; padding-bottom: 10px; }
+        .nav-item { display: flex; flex-direction: column; align-items: center; color: rgba(255,255,255,0.4); font-size: 9px; font-weight: 700; text-transform: uppercase; gap: 4px; cursor: pointer; }
+        .nav-item.active { color: var(--gold); }
+        .nav-icon { font-size: 20px; }
+        .cart-count { position: absolute; top: 10px; right: 26%; background: var(--red); color: white; width: 18px; height: 18px; border-radius: 50%; font-size: 10px; display: flex; align-items: center; justify-content: center; border: 2px solid var(--text); }
+
+        /* --- DRAWER --- */
+        .overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.5); backdrop-filter: blur(4px); z-index: 2000; display: none; opacity: 0; transition: 0.3s; }
+        .overlay.active { display: block; opacity: 1; }
+        .drawer { position: fixed; bottom: 0; left: 0; right: 0; background: var(--white); border-radius: 30px 30px 0 0; z-index: 2001; transform: translateY(100%); transition: 0.4s cubic-bezier(0.8, 0, 0.2, 1); max-height: 85vh; display: flex; flex-direction: column; }
+        .drawer.active { transform: translateY(0); }
+        .drawer-head { padding: 25px; border-bottom: 1px solid #eee; display: flex; justify-content: space-between; align-items: center; }
+        .drawer-head h2 { font-family: 'Cormorant Garamond', serif; font-size: 26px; font-weight: 700; }
+        .drawer-items { flex: 1; overflow-y: auto; padding: 20px; }
+        .cart-item { display: flex; align-items: center; gap: 15px; padding: 15px; background: #fafafa; border-radius: 15px; margin-bottom: 10px; }
+        .drawer-foot { padding: 25px; border-top: 1px solid #eee; padding-bottom: 40px; }
+        .btn-order { width: 100%; padding: 18px; border-radius: 15px; border: none; background: linear-gradient(135deg, #25D366, #128C7E); color: white; font-weight: 800; font-size: 16px; box-shadow: 0 10px 20px rgba(37,211,102,0.2); }
+
+        /* --- TOAST --- */
+        #toast { position: fixed; bottom: 85px; left: 50%; transform: translateX(-50%) translateY(100px); background: var(--text); color: white; padding: 10px 20px; border-radius: 30px; font-size: 12px; font-weight: 700; z-index: 5000; transition: 0.3s; }
+        #toast.show { transform: translateX(-50%) translateY(0); }
+
+        @media (min-width: 1024px) {
+            body { max-width: 480px; margin: 0 auto; box-shadow: 0 0 50px rgba(0,0,0,0.1); }
+            .bottom-nav { max-width: 480px; left: 50%; transform: translateX(-50%); }
+            .drawer { max-width: 480px; left: 50%; transform: translate(-50%, 100%); }
+            .drawer.active { transform: translate(-50%, 0); }
+        }
+    </style>
+</head>
+<body>
+
+<div class="ticker">
+    <div class="ticker-inner">
+        <span>Free delivery above Rs. 1500</span>
+        <span>Fresh daily from our kitchen</span>
+        <span>Tandoori pizza every day</span>
+        <span>Premium mithai for all occasions</span>
+        <span>Order via WhatsApp</span>
+        <span>Free delivery above Rs. 1500</span>
+    </div>
+</div>
+
+<nav>
+    <a href="#" class="logo">
+        <span class="logo-main">Labbaik</span>
+        <span class="logo-sub">Sweets & Pizza</span>
+    </a>
+    <div style="font-size: 10px; font-weight: 800; color: var(--accent); display: flex; align-items: center; gap: 5px;">
+        <span style="width:7px; height:7px; background:var(--accent); border-radius:50%;"></span> OPEN NOW
+    </div>
+</nav>
+
+<section class="hero">
+    <h1>Taste The<br><em>Tradition</em></h1>
+    <p>Premium Sweets, Tandoori Pizza & Fast Food. Samundri's pride delivered to your door.</p>
+</section>
+
+<div class="tabs-wrap">
+    <div class="tabs">
+        <button class="tab-btn active" id="btn-all" onclick="set('all')">✨ ALL</button>
+        <button class="tab-btn" id="btn-pizza" onclick="set('pizza')">🍕 Pizza</button>
+        <button class="tab-btn" id="btn-sweets" onclick="set('sweets')">🍯 Sweets</button>
+        <button class="tab-btn" id="btn-fast" onclick="set('fast')">🍔 Burgers</button>
+    </div>
+</div>
+
+<div class="grid" id="menuGrid"></div>
+
+<div class="bottom-nav">
+    <div class="nav-item active" onclick="window.scrollTo(0,0)">
+        <span class="nav-icon">🏠</span>Home
+    </div>
+    <div class="nav-item" onclick="document.getElementById('menuGrid').scrollIntoView()">
+        <span class="nav-icon">🍕</span>Menu
+    </div>
+    <div class="nav-item" onclick="toggleCart()" style="position:relative;">
+        <span class="nav-icon">🛒</span>Cart
+        <div class="cart-count" id="badge">0</div>
+    </div>
+    <div class="nav-item" onclick="toggleInfo()">
+        <span class="nav-icon">ℹ️</span>Info
+    </div>
+</div>
+
+<div class="overlay" id="overlay" onclick="closeAll()"></div>
+
+<!-- CART DRAWER -->
+<div class="drawer" id="cartDrawer">
+    <div class="drawer-head">
+        <h2>Your <span>Order</span></h2>
+        <button onclick="toggleCart()" style="border:none; background:none; font-size:24px;">✕</button>
+    </div>
+    <div class="drawer-items" id="cartItems"></div>
+    <div class="drawer-foot">
+        <div style="display:flex; justify-content:space-between; font-size:24px; font-weight:800; margin-bottom:15px;">
+            <span>Total</span><span id="cartTotal">Rs. 0</span>
+        </div>
+        <button class="btn-order" onclick="placeOrder()">CONFIRM ON WHATSAPP ➔</button>
+    </div>
+</div>
+
+<!-- INFO DRAWER -->
+<div class="drawer" id="infoDrawer">
+    <div class="drawer-head">
+        <h2>About <span>Us</span></h2>
+        <button onclick="toggleInfo()" style="border:none; background:none; font-size:24px;">✕</button>
+    </div>
+    <div class="drawer-items">
+        <div style="padding-bottom:20px;">
+            <div style="background:var(--red); color:white; padding:20px; border-radius:15px; margin-bottom:15px;">
+                <div style="font-weight:800; font-size:18px;">Labbaik Sweets & Pizza</div>
+                <div style="font-size:12px; opacity:0.8;">Est. Samundri · Since 1998</div>
+            </div>
+            <div style="display:flex; gap:10px; margin-bottom:10px;">
+                <div style="flex:1; background:#fff; padding:15px; border-radius:15px; border:1px solid #eee;">
+                    <div style="font-size:11px; color:var(--muted); font-weight:700;">ADDRESS</div>
+                    <div style="font-size:13px; font-weight:700;">Main Bazar, Samundri</div>
+                </div>
+            </div>
+            <div style="background:#fff; padding:15px; border-radius:15px; border:1px solid #eee; margin-bottom:10px;">
+                <div style="font-size:11px; color:var(--muted); font-weight:700;">HOURS</div>
+                <div style="font-size:13px; font-weight:700;">10:00 AM – 11:00 PM Daily</div>
+            </div>
+            <p style="font-size:13px; color:var(--muted); line-height:1.6;">Serving fresh, handcrafted sweets and traditional clay-oven pizzas for over 25 years.</p>
+        </div>
+    </div>
+</div>
+
+<div id="toast">✅ Added to Cart!</div>
+
+<script>
+    const ITEMS = [
+        { id:1, cat:'pizza', name:'Tandoori Hot Pizza', price:1250, emoji:'🍕', badge:'HOT' },
+        { id:2, cat:'pizza', name:'Crown Crust Special', price:1650, emoji:'🥘', badge:'BEST' },
+        { id:3, cat:'sweets', name:'Mix Mithai (1kg)', price:950, emoji:'🍬', badge:'NEW' },
+        { id:4, cat:'sweets', name:'Shahi Khoya Barfi', price:1150, emoji:'🍯', badge:'' },
+        { id:5, cat:'fast', name:'Zinger Burger', price:550, emoji:'🍔', badge:'HOT' },
+        { id:6, cat:'drinks', name:'Cold Drink', price:120, emoji:'🥤', badge:'' }
+    ];
+    let cart = [];
+    let cur = 'all';
+
+    function set(c) {
+        cur = c;
+        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+        document.getElementById(`btn-${c}`).classList.add('active');
+        render();
+    }
+
+    function render() {
+        const g = document.getElementById('menuGrid');
+        const list = cur === 'all' ? ITEMS : ITEMS.filter(i => i.cat === cur);
+        g.innerHTML = list.map(i => `
+            <div class="card">
+                <div class="item-img">${i.emoji}${i.badge ? `<div class="badge">${i.badge}</div>` : ''}</div>
+                <div class="card-body">
+                    <div class="card-title">${i.name}</div>
+                    <div class="card-price">Rs. ${i.price}</div>
+                    <button class="btn-add" onclick="add(${i.id})">ADD TO CART</button>
+                </div>
+            </div>
+        `).join('');
+    }
+
+    function toggleCart() {
+        document.getElementById('cartDrawer').classList.toggle('active');
+        document.getElementById('overlay').classList.toggle('active');
+    }
+    function toggleInfo() {
+        document.getElementById('infoDrawer').classList.toggle('active');
+        document.getElementById('overlay').classList.toggle('active');
+    }
+    function closeAll() {
+        document.querySelectorAll('.drawer').forEach(d => d.classList.remove('active'));
+        document.getElementById('overlay').classList.remove('active');
+    }
+
+    function add(id) {
+        const item = ITEMS.find(m => m.id === id);
+        cart.push(item);
+        update();
+        const t = document.getElementById('toast');
+        t.classList.add('show');
+        setTimeout(() => t.classList.remove('show'), 2000);
+        if(window.navigator.vibrate) window.navigator.vibrate(40);
+    }
+
+    function update() {
+        const l = document.getElementById('cartItems');
+        const b = document.getElementById('badge');
+        const t = document.getElementById('cartTotal');
+        b.textContent = cart.length;
+        let sum = 0;
+        l.innerHTML = cart.map((i, idx) => {
+            sum += i.price;
+            return `<div class="cart-item">
+                <div style="font-size:28px;">${i.emoji}</div>
+                <div style="flex:1;"><div style="font-weight:700; font-size:13px;">${i.name}</div><div style="font-weight:700; color:var(--red);">Rs. ${i.price}</div></div>
+                <button onclick="remove(${idx})" style="border:none; background:#eee; width:25px; height:25px; border-radius:50%;">✕</button>
+            </div>`;
+        }).join('');
+        t.textContent = `Rs. ${sum}`;
+    }
+
+    function remove(idx) { cart.splice(idx, 1); update(); }
+
+    function placeOrder() {
+        if(cart.length === 0) return;
+        let msg = "Assalam-o-Alaikum! Labbaik Order:\n";
+        cart.forEach(i => msg += `• ${i.name} (Rs.${i.price})\n`);
+        msg += `\nTotal: Rs.${cart.reduce((s,i) => s + i.price, 0)}`;
+        window.open(`https://wa.me/923336586799?text=${encodeURIComponent(msg)}`);
+    }
+
+    render();
+</script>
+</body>
+</html>
